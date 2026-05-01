@@ -645,29 +645,29 @@ const JORNADA_HORAS    = 4;                // horas de trabalho
 /* ═══════════════════════════════
    STATE
 ═══════════════════════════════ */
-const DB = {
+let DB = {
   user: { name: 'Ana Silva', dept: 'Recursos Humanos' },
-  records: [
-    { type:'entrada', date:'2025-04-30', time:'13:42', late:false },
-    { type:'saida',   date:'2025-04-30', time:'17:42', late:false },
-    { type:'entrada', date:'2025-04-29', time:'14:05', late:true  },
-    { type:'saida',   date:'2025-04-29', time:'18:05', late:false },
-    { type:'entrada', date:'2025-04-28', time:'13:38', late:false },
-    { type:'saida',   date:'2025-04-28', time:'17:38', late:false },
-    { type:'entrada', date:'2025-04-25', time:'13:50', late:false },
-    { type:'saida',   date:'2025-04-25', time:'17:50', late:false },
-  ],
-  justifications: [
-    { id:1, date:'2025-04-27', motivo:'📱 Falha no Aplicativo / Sem Internet', ponto:'Entrada', desc:'O aplicativo apresentou erro de conexão ao tentar bater a entrada.', status:'aprovada', obs:'Justificativa aceita. Registro corrigido pelo RH.', hasFile:false },
-    { id:2, date:'2025-04-24', motivo:'🤒 Atestado Médico', ponto:'Entrada e Saída (dia completo)', desc:'Precisei comparecer à UPA por mal-estar. Atestado médico em anexo.', status:'analise', obs:'', hasFile:true },
-    { id:3, date:'2025-04-22', motivo:'🚗 Problema de Transporte', ponto:'Entrada', desc:'Linha de ônibus suprimida devido a acidente na Av. Brasil.', status:'rejeitada', obs:'Não apresentou comprovante. Por favor, regularize com o RH.', hasFile:false },
-  ],
+  records: [],
+  justifications: [],
   currentType: null,
   scanning: false,
   camStream: null,
   selectedFile: null,
   histFilter: 'todos',
 };
+
+/* SALVAR NO NAVEGADOR */
+function saveDB(){
+  localStorage.setItem('pontoFaceDB', JSON.stringify(DB));
+}
+
+/* CARREGAR DO NAVEGADOR */
+function loadDB(){
+  const data = localStorage.getItem('pontoFaceDB');
+  if(data){
+    DB = JSON.parse(data);
+  }
+}
 
 /* ═══════════════════════════════
    CLOCK
@@ -921,7 +921,7 @@ function finalize(){
 
   const late = DB.currentType==='entrada' && isLate();
   const rec={ type:DB.currentType, date:todayStr(), time:nowTime(), late };
-  DB.records.unshift(rec);
+  saveDB();
   DB.scanning=false;
   cta.disabled=false; cta.textContent='🔍 Iniciar Reconhecimento Facial';
   resetScan(); setSS('Selecione o tipo e inicie o reconhecimento');
