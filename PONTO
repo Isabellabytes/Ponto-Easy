@@ -1014,7 +1014,7 @@ function submitJust(){
   const desc  =document.getElementById('jfDesc').value.trim();
   if(!date||!motivo||!ponto||!desc){ toast('⚠️ Preencha todos os campos obrigatórios','err'); return; }
   if(desc.length<20){ toast('⚠️ Descrição muito curta (mín. 20 caracteres)','err'); return; }
-  DB.justifications.unshift({ id:Date.now(), date, motivo, ponto, desc, status:'analise', obs:'', hasFile:!!DB.selectedFile });
+  saveDB();{ id:Date.now(), date, motivo, ponto, desc, status:'analise', obs:'', hasFile:!!DB.selectedFile });
   document.getElementById('jfMotivo').value='';
   document.getElementById('jfPonto').value='';
   document.getElementById('jfDesc').value='';
@@ -1103,6 +1103,7 @@ function toast(msg,type=''){
    INIT
 ═══════════════════════════════ */
 document.getElementById('jfDate').value=todayStr();
+loadDB();
 renderHome();
 renderHist();
 renderJustList();
