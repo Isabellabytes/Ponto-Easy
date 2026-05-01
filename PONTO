@@ -54,20 +54,26 @@ font-family:sans-serif;
 /* ================= LOGIN ================= */
 
 const funcionarios = [
-  { user: "ana", pass: "123", name: "Ana Silva", dept: "RH" },
+  { user: "ana", pass: "123", name: "Ana Silva", dept: "Recursos Humanos" },
   { user: "joao", pass: "123", name: "João Souza", dept: "Financeiro" },
   { user: "maria", pass: "123", name: "Maria Lima", dept: "Vendas" }
 ];
 
-let usuarioAtual = null;
-
 window.onload = () => {
+  tick();
+
   const user = localStorage.getItem("userLogado");
 
   if(user){
-    usuarioAtual = JSON.parse(user);
-    iniciarApp();
+    DB.user = JSON.parse(user);
+    document.getElementById("loginScreen").style.display = "none";
+  } else {
+    document.getElementById("app").style.display = "none";
   }
+
+  renderHome();
+  renderHist();
+  renderJustList();
 };
 
 function fazerLogin(){
@@ -78,21 +84,16 @@ function fazerLogin(){
 
   if(encontrado){
     localStorage.setItem("userLogado", JSON.stringify(encontrado));
-    usuarioAtual = encontrado;
-    iniciarApp();
+    DB.user = encontrado;
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    renderHome();
+    toast("✅ Login realizado!", "ok");
   } else {
-    alert("Usuário ou senha inválidos");
+    toast("❌ Usuário ou senha inválidos", "err");
   }
-}
-
-function iniciarApp(){
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("app").style.display = "block";
-
-  document.getElementById("userName").innerText = usuarioAtual.name;
-  document.getElementById("userDept").innerText = usuarioAtual.dept;
-
-  carregarRegistros();
 }
 
 function logout(){
@@ -532,7 +533,16 @@ Entrar
 <div class="phone" id="app">
 
 <!-- HEADER -->
-<div class="hdr">
+<div class="hdr"><button onclick="logout()" style="
+background:red;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+font-size:12px;
+">
+Sair
+</button>
   <div class="hdr-logo">
     <div class="hdr-icon">⏱</div>
     <div>
