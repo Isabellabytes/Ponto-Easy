@@ -2,41 +2,140 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PontoFace</title>
-<style>
-/* ═══════ TOKENS ═══════ */
-:root{
-  --blue:       #1d4ed8;
-  --blue-dark:  #1e40af;
-  --blue-light: #eff6ff;
-  --green:      #15803d;
-  --green-light:#dcfce7;
-  --red:        #b91c1c;
-  --red-light:  #fee2e2;
-  --amber:      #b45309;
-  --amber-light:#fef3c7;
-  --slate-50:   #f8fafc;
-  --slate-100:  #f1f5f9;
-  --slate-200:  #e2e8f0;
-  --slate-300:  #cbd5e1;
-  --slate-400:  #94a3b8;
-  --slate-500:  #64748b;
-  --slate-600:  #475569;
-  --slate-700:  #334155;
-  --slate-800:  #1e293b;
-  --slate-900:  #0f172a;
-  --r:  14px;
-  --rs: 10px;
+</head>
+
+<body>
+
+<!-- 🔐 TELA DE LOGIN -->
+<div id="loginScreen" style="
+position:fixed; inset:0; background:#0f172a;
+display:flex; align-items:center; justify-content:center;
+z-index:999;
+font-family:sans-serif;
+">
+
+<div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:320px;">
+  <h2 style="text-align:center;">Login Funcionário</h2>
+
+  <input id="loginUser" placeholder="Usuário" style="width:100%; padding:10px; margin-top:15px;">
+  <input id="loginPass" type="password" placeholder="Senha" style="width:100%; padding:10px; margin-top:10px;">
+
+  <button onclick="fazerLogin()" style="width:100%; padding:12px; margin-top:15px; background:#1d4ed8; color:white; border:none; border-radius:8px;">
+    Entrar
+  </button>
+</div>
+
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none; font-family:sans-serif; padding:20px;">
+
+<h2 id="userName">Usuário</h2>
+<p id="userDept">Departamento</p>
+
+<button onclick="baterPonto('entrada')">🟢 Entrada</button>
+<button onclick="baterPonto('saida')">🔴 Saída</button>
+
+<br><br>
+
+<button onclick="logout()">Sair</button>
+
+<hr>
+
+<h3>Registros:</h3>
+<ul id="lista"></ul>
+
+</div>
+
+<script>
+
+/* ================= LOGIN ================= */
+
+const funcionarios = [
+  { user: "ana", pass: "123", name: "Ana Silva", dept: "Recursos Humanos" },
+  { user: "joao", pass: "123", name: "João Souza", dept: "Financeiro" },
+  { user: "maria", pass: "123", name: "Maria Lima", dept: "Vendas" }
+];
+
+window.onload = () => {
+  tick();
+
+  const user = localStorage.getItem("userLogado");
+
+  if(user){
+    DB.user = JSON.parse(user);
+    document.getElementById("loginScreen").style.display = "none";
+  } else {
+    document.getElementById("app").style.display = "none";
+  }
+
+  renderHome();
+  renderHist();
+  renderJustList();
+};
+
+function fazerLogin(){
+  const user = document.getElementById("loginUser").value;
+  const pass = document.getElementById("loginPass").value;
+
+  const encontrado = funcionarios.find(f => f.user === user && f.pass === pass);
+
+  if(encontrado){
+    localStorage.setItem("userLogado", JSON.stringify(encontrado));
+    DB.user = encontrado;
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    renderHome();
+    toast("✅ Login realizado!", "ok");
+  } else {
+    toast("❌ Usuário ou senha inválidos", "err");
+  }
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;-webkit-tap-highlight-color:transparent;}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#0f172a;
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;
+
+function logout(){
+  localStorage.removeItem("userLogado");
+  location.reload();
 }
+
+/* ================= PONTO ================= */
+
+function baterPonto(tipo){
+  const agora = new Date();
+  const hora = agora.toLocaleTimeString();
+
+  const registro = {
+    tipo,
+    hora
+  };
+
+  let registros = JSON.parse(localStorage.getItem("registros")) || [];
+  registros.push(registro);
+  localStorage.setItem("registros", JSON.stringify(registros));
+
+  carregarRegistros();
+}
+
+function carregarRegistros(){
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+  registros.forEach(r => {
+    const li = document.createElement("li");
+    li.innerText = `${r.tipo.toUpperCase()} - ${r.hora}`;
+    lista.appendChild(li);
+  });
+}
+
+</script>
+
+</body>
+</html>
 
 /* ═══════ SHELL ═══════ */
 .phone{
@@ -394,10 +493,56 @@ body{
 </style>
 </head>
 <body>
+<div id="loginPage" style="
+position:fixed;
+inset:0;
+background:#0f172a;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
+">
+
+<div style="
+background:white;
+padding:25px;
+border-radius:14px;
+width:90%;
+max-width:320px;
+">
+
+<h2 style="margin-bottom:15px;">Login</h2>
+
+<input id="loginEmail" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;">
+<input id="loginSenha" type="password" placeholder="Senha" style="width:100%;padding:10px;margin-bottom:15px;">
+
+<button onclick="login()" style="
+width:100%;
+padding:12px;
+background:#1d4ed8;
+color:white;
+border:none;
+border-radius:8px;
+font-weight:bold;
+">
+Entrar
+</button>
+
+</div>
+</div>
 <div class="phone" id="app">
 
 <!-- HEADER -->
-<div class="hdr">
+<div class="hdr"><button onclick="logout()" style="
+background:red;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+font-size:12px;
+">
+Sair
+</button>
   <div class="hdr-logo">
     <div class="hdr-icon">⏱</div>
     <div>
@@ -410,7 +555,6 @@ body{
     <div class="hdr-date" id="hdrDate">—</div>
   </div>
 </div>
-
 <!-- ════════════ HOME ════════════ -->
 <div class="page active" id="page-home">
 
@@ -645,29 +789,33 @@ const JORNADA_HORAS    = 4;                // horas de trabalho
 /* ═══════════════════════════════
    STATE
 ═══════════════════════════════ */
-const DB = {
+const USERS = [
+  { email: "ana@empresa.com", senha: "123", nome: "Ana Silva", dept: "RH" },
+  { email: "joao@empresa.com", senha: "123", nome: "João Souza", dept: "TI" }
+];
+let DB = {
   user: { name: 'Ana Silva', dept: 'Recursos Humanos' },
-  records: [
-    { type:'entrada', date:'2025-04-30', time:'13:42', late:false },
-    { type:'saida',   date:'2025-04-30', time:'17:42', late:false },
-    { type:'entrada', date:'2025-04-29', time:'14:05', late:true  },
-    { type:'saida',   date:'2025-04-29', time:'18:05', late:false },
-    { type:'entrada', date:'2025-04-28', time:'13:38', late:false },
-    { type:'saida',   date:'2025-04-28', time:'17:38', late:false },
-    { type:'entrada', date:'2025-04-25', time:'13:50', late:false },
-    { type:'saida',   date:'2025-04-25', time:'17:50', late:false },
-  ],
-  justifications: [
-    { id:1, date:'2025-04-27', motivo:'📱 Falha no Aplicativo / Sem Internet', ponto:'Entrada', desc:'O aplicativo apresentou erro de conexão ao tentar bater a entrada.', status:'aprovada', obs:'Justificativa aceita. Registro corrigido pelo RH.', hasFile:false },
-    { id:2, date:'2025-04-24', motivo:'🤒 Atestado Médico', ponto:'Entrada e Saída (dia completo)', desc:'Precisei comparecer à UPA por mal-estar. Atestado médico em anexo.', status:'analise', obs:'', hasFile:true },
-    { id:3, date:'2025-04-22', motivo:'🚗 Problema de Transporte', ponto:'Entrada', desc:'Linha de ônibus suprimida devido a acidente na Av. Brasil.', status:'rejeitada', obs:'Não apresentou comprovante. Por favor, regularize com o RH.', hasFile:false },
-  ],
+  records: [],
+  justifications: [],
   currentType: null,
   scanning: false,
   camStream: null,
   selectedFile: null,
   histFilter: 'todos',
 };
+
+/* SALVAR NO NAVEGADOR */
+function saveDB(){
+  localStorage.setItem('pontoFaceDB', JSON.stringify(DB));
+}
+
+/* CARREGAR DO NAVEGADOR */
+function loadDB(){
+  const data = localStorage.getItem('pontoFaceDB');
+  if(data){
+    DB = JSON.parse(data);
+  }
+}
 
 /* ═══════════════════════════════
    CLOCK
@@ -921,7 +1069,7 @@ function finalize(){
 
   const late = DB.currentType==='entrada' && isLate();
   const rec={ type:DB.currentType, date:todayStr(), time:nowTime(), late };
-  DB.records.unshift(rec);
+  saveDB();
   DB.scanning=false;
   cta.disabled=false; cta.textContent='🔍 Iniciar Reconhecimento Facial';
   resetScan(); setSS('Selecione o tipo e inicie o reconhecimento');
@@ -1014,7 +1162,7 @@ function submitJust(){
   const desc  =document.getElementById('jfDesc').value.trim();
   if(!date||!motivo||!ponto||!desc){ toast('⚠️ Preencha todos os campos obrigatórios','err'); return; }
   if(desc.length<20){ toast('⚠️ Descrição muito curta (mín. 20 caracteres)','err'); return; }
-  DB.justifications.unshift({ id:Date.now(), date, motivo, ponto, desc, status:'analise', obs:'', hasFile:!!DB.selectedFile });
+  saveDB();{ id:Date.now(), date, motivo, ponto, desc, status:'analise', obs:'', hasFile:!!DB.selectedFile });
   document.getElementById('jfMotivo').value='';
   document.getElementById('jfPonto').value='';
   document.getElementById('jfDesc').value='';
@@ -1103,6 +1251,7 @@ function toast(msg,type=''){
    INIT
 ═══════════════════════════════ */
 document.getElementById('jfDate').value=todayStr();
+loadDB();
 renderHome();
 renderHist();
 renderJustList();
