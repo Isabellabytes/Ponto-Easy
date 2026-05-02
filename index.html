@@ -56,6 +56,16 @@ background:white; padding:25px; border-radius:12px; width:90%; max-width:320px;
 <ul id="lista"></ul>
 
 </div>
+  document.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    const loginTela = document.getElementById("loginScreen");
+
+    // só executa se a tela de login estiver aberta
+    if (loginTela && loginTela.style.display !== "none") {
+      fazerLogin();
+    }
+  }
+});
 
 <script>
 
