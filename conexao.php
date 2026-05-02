@@ -1,0 +1,19 @@
+<?php
+// conexao.php: define $mysqli para usar em outros scripts
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+$host = "localhost";
+$user = "root";
+$pass = "";
+$banco = "controle_ponto";
+
+$mysqli = new mysqli($host, $user, $pass, $banco);
+if ($mysqli->connect_error) {
+    die(json_encode(['error' => 'Conexão falhou: '.$mysqli-
+
+>connect_error]));
+}
+// Sem echo de sucesso; apenas se conecta ou termina com 
+
+erro.
+?>
