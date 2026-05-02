@@ -16,16 +16,24 @@ z-index:999;
 font-family:sans-serif;
 ">
 
-<div style="background:white; padding:25px; border-radius:12px; width:90%; max-width:320px;">
-  <h2 style="text-align:center;">Login Funcionário</h2>
+<form onsubmit="fazerLogin(); return false;" style="
+background:white; padding:25px; border-radius:12px; width:90%; max-width:320px;
+">
 
-  <input id="loginUser" placeholder="Usuário" style="width:100%; padding:10px; margin-top:15px;">
-  <input id="loginPass" type="password" placeholder="Senha" style="width:100%; padding:10px; margin-top:10px;">
+  <h2 style="text-align:center; margin-bottom:20px;">Login Funcionário</h2>
 
-  <button onclick="fazerLogin()" style="width:100%; padding:12px; margin-top:15px; background:#1d4ed8; color:white; border:none; border-radius:8px;">
+  <input id="loginUser" placeholder="Usuário"
+  style="width:100%; padding:10px; margin-bottom:10px;" required>
+  
+  <input id="loginPass" type="password" placeholder="Senha"
+  style="width:100%; padding:10px; margin-bottom:15px;" required>
+
+  <button type="submit"
+  style="width:100%; padding:12px; background:#1d4ed8; color:white; border:none; border-radius:8px;">
     Entrar
   </button>
-</div>
+
+</form>
 
 </div>
 
